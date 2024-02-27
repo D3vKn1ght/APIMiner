@@ -13,7 +13,7 @@ APIMiner is a tool for logging API calls in Windows executables, useful for deve
 - Simple configuration via `apiminer_config.txt`.
 
 **Setup:**
-1. Place `apiminer_config.txt` at `C:\apiminer-config.txt` with the line `log-dir-path=C:\Users\<username>\Documents\`.
+1. Place `apiminer_config.txt` at `C:\apiminer_config.txt` with the line `log-dir-path=C:\Users\<username>\Documents\`.
 2. Ensure DLLs (`apiminer-monitor-x86.dll` or `apiminer-monitor-x64.dll`) are in the same directory as the respective APIMiner executable.
 
 **Usage:**

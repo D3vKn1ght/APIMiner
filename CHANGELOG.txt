@@ -3,7 +3,7 @@
 
   A default apiminer_config.txt is provided in the root folder of this
   repository. Config file should be located in standard fixed path
-  C:\apiminer-config.txt. The config file should contain only a single
+  C:\apiminer_config.txt. The config file should contain only a single
   config param specified below -
   log-dir-path=C:\Users\<username>\Documents\
 
