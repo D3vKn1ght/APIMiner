@@ -79,6 +79,8 @@ Middle::
         }
     }
 
+    apiminer_inject_process(lpProcessInformation->hProcess);
+
 Logging::
 
     u filepath filepath

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <stdarg.h>
 #include <windows.h>
+#include <inttypes.h>
 #include "bson.h"
 #include "hooking.h"
 #include "memory.h"
@@ -42,6 +43,9 @@ static uint8_t *g_api_init;
 
 static wchar_t g_log_pipename[MAX_PATH];
 static HANDLE g_log_handle;
+static wchar_t g_log_apiminer_pipename[MAX_PATH];
+static HANDLE g_log_apiminer_handle;
+char g_apiminer_monitor_module_path[MAX_PATH];
 
 #if DEBUG
 static wchar_t g_debug_filepath[MAX_PATH];
@@ -52,6 +56,7 @@ static void log_raw(const char *buf, size_t length);
 
 static int open_handles()
 {
+#if 0
     do {
         // TODO Use NtCreateFile instead of CreateFileW.
         g_log_handle = CreateFileW(g_log_pipename, GENERIC_WRITE,
@@ -60,6 +65,16 @@ static int open_handles()
 
         sleep(50);
     } while (g_log_handle == INVALID_HANDLE_VALUE);
+#endif
+
+    do {
+        // TODO Use NtCreateFile instead of CreateFileW.
+        g_log_apiminer_handle = CreateFileW(g_log_apiminer_pipename, GENERIC_WRITE,
+            FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, CREATE_ALWAYS,
+            FILE_FLAG_WRITE_THROUGH, NULL);
+
+        sleep(50);
+    } while (g_log_apiminer_handle == INVALID_HANDLE_VALUE);
 
     // The process identifier.
     uint32_t process_identifier = get_current_process_id();
@@ -73,8 +88,26 @@ static int open_handles()
     return 0;
 }
 
+void raw_buf_add(raw_buf_t *raw_buf, uint8_t *buf, uint32_t len)
+{
+    uint32_t write_len;
+
+    if (len >= sizeof(raw_buf->buf) - raw_buf->offset) {
+        write_len = (sizeof(raw_buf->buf) - raw_buf->offset) - 1;
+    } else {
+        write_len = len;
+    }
+
+    memcpy(raw_buf->buf + raw_buf->offset, buf, write_len);
+    raw_buf->offset += write_len;
+    raw_buf->buf[raw_buf->offset] = '\0';
+
+}
+
 static void log_raw(const char *buf, size_t length)
 {
+    return;
+
     EnterCriticalSection(&g_mutex);
 
     while (length != 0) {
@@ -143,6 +176,42 @@ void log_string(bson *b, const char *idx, const char *str, int length)
     }
 }
 
+void log_apiminer_string(char *argname, raw_buf_t *raw_buf, const char *str, int length)
+{
+    char tmp_str_buf[1024];
+
+    if (str == NULL) {
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                    _TRUNCATE, "[%s]<NULL>, ", argname);
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
+        return;
+    } else if (length == 0) {
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                    _TRUNCATE, "[%s]\"\", ", argname);
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
+        return;
+    }
+
+    char *utf8s = copy_utf8_string(str, length);
+    if(utf8s != NULL) {
+        int utf8len = *(int *) utf8s;
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                    "[%s]\"", argname);
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, (uint32_t)strlen(tmp_str_buf));
+        raw_buf_add(raw_buf, (uint8_t *)utf8s + 4, utf8len);
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                    "\", ");
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, (uint32_t)strlen(tmp_str_buf));
+
+        mem_free(utf8s);
+    }
+    else {
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                    "[%s]<INVALID_POINTER>, ", argname);
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, (uint32_t)strlen(tmp_str_buf));
+    }
+}
+
 void log_wstring(bson *b, const char *idx, const wchar_t *str, int length)
 {
     if(str == NULL || length == 0) {
@@ -161,6 +230,42 @@ void log_wstring(bson *b, const char *idx, const wchar_t *str, int length)
     }
     else {
         bson_append_binary(b, idx, BSON_BIN_BINARY, "<INVALID POINTER>", 17);
+    }
+}
+
+void log_apiminer_wstring(char *argname, raw_buf_t *raw_buf, const wchar_t *str, int length)
+{
+    char tmp_str_buf[1024];
+
+    if(str == NULL) {
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                    "[%s]<NULL>, ", argname);
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, (uint32_t)strlen(tmp_str_buf));
+        return;
+    } else if (length == 0) {
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                    "[%s]\"\", ", argname);
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, (uint32_t)strlen(tmp_str_buf));
+        return;
+    }
+
+    char *utf8s = copy_utf8_wstring(str, length);
+    if(utf8s != NULL) {
+        int utf8len = *(int *) utf8s;
+
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                    "[%s]\"", argname);
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, (uint32_t)strlen(tmp_str_buf));
+        raw_buf_add(raw_buf, (uint8_t *)utf8s + 4, utf8len);
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                    "\", ");
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, (uint32_t)strlen(tmp_str_buf));
+
+        mem_free(utf8s);
+    } else {
+        _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                    "[%s]<INVALID_POINTER>, ", argname);
+        raw_buf_add(raw_buf, (uint8_t *)tmp_str_buf, (uint32_t)strlen(tmp_str_buf));
     }
 }
 
@@ -360,10 +465,21 @@ static void _log_stacktrace(bson *b)
 
 #endif
 
+void log_apiminer_raw(uint8_t *buf, uint32_t len)
+{
+    write_file(g_log_apiminer_handle, buf, len, NULL);
+}
+
+
 void log_api(uint32_t index, int is_success, uintptr_t return_value,
     uint64_t hash, last_error_t *lasterr, ...)
 {
+
     va_list args; char idx[4];
+    raw_buf_t raw_buf;
+    char tmp_str_buf[1024];
+    char *argname;
+    memset(&raw_buf, 0, sizeof(raw_buf));
 
     // We haven't started logging yet.
     if(index >= sig_index_firsthookidx() && g_monitor_logging == 0) {
@@ -373,6 +489,11 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
     va_start(args, lasterr);
 
     EnterCriticalSection(&g_mutex);
+
+    _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                "<%s>-<%d,0x%p> %s(",
+                sig_category(index), return_value, return_value, sig_apiname(index));
+    raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
 
     if(g_api_init[index] == 0) {
         log_explain(index);
@@ -408,6 +529,8 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
     int argnum = 2, override = 0;
 
     for (const char *fmt = sig_paramtypes(index); *fmt != 0; fmt++) {
+        argname = (char *)sig_param_name(index, argnum - 2);
+
         ultostr(argnum++, idx, 10);
 
         // Limitation override. Instead of displaying this right away in the
@@ -421,20 +544,25 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
         if(*fmt == 's') {
             const char *s = va_arg(args, const char *);
             log_string(&b, idx, s, s != NULL ? copy_strlen(s) : 0);
+            log_apiminer_string(argname, &raw_buf, s, s != NULL ? copy_strlen(s) : 0);
         }
         else if(*fmt == 'S') {
             int len = va_arg(args, int);
             const char *s = va_arg(args, const char *);
             log_string(&b, idx, s, len);
+            log_apiminer_string(argname, &raw_buf, s, len);
         }
         else if(*fmt == 'u') {
             const wchar_t *s = va_arg(args, const wchar_t *);
             log_wstring(&b, idx, s, s != NULL ? copy_strlenW(s) : 0);
+            log_apiminer_wstring((char *)argname, &raw_buf, s,
+                               s != NULL ? copy_strlenW(s) : 0);
         }
         else if(*fmt == 'U') {
             int len = va_arg(args, int);
             const wchar_t *s = va_arg(args, const wchar_t *);
             log_wstring(&b, idx, s, len);
+            log_apiminer_wstring((char *)argname, &raw_buf, s, len);
         }
         else if(*fmt == 'b') {
             uintptr_t len = va_arg(args, uintptr_t);
@@ -462,27 +590,43 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
         else if(*fmt == 'i' || *fmt == 'x') {
             int value = va_arg(args, int);
             log_int32(&b, idx, value);
+            _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                        _TRUNCATE, "[%s]%d, ", argname, value);
+            raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
         }
         else if(*fmt == 'I') {
             uint32_t *value = va_arg(args, uint32_t *);
             log_int32(&b, idx, value != NULL ? copy_uint32(value) : 0);
+            _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                        _TRUNCATE, "[%s]%u, ",
+                        argname, value != NULL ? copy_uint32(value) : 0);
+            raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
         }
         else if(*fmt == 'l' || *fmt == 'p') {
             uintptr_t value = va_arg(args, uintptr_t);
             log_intptr(&b, idx, value);
+            _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                        _TRUNCATE, "[%s]0x%p, ", argname, value);
+            raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
         }
         else if(*fmt == 'L' || *fmt == 'P') {
             uintptr_t *value = va_arg(args, uintptr_t *);
             log_intptr(&b, idx, value != NULL ? copy_uintptr(value) : 0);
+            _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                        _TRUNCATE, "[%s]0x%p, ", argname,
+                        value != NULL ? copy_uintptr(value) : 0);
+            raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
         }
         else if(*fmt == 'o') {
             ANSI_STRING *str = va_arg(args, ANSI_STRING *), str_;
             if(str != NULL &&
                     copy_bytes(&str_, str, sizeof(ANSI_STRING)) == 0) {
                 log_string(&b, idx, str_.Buffer, str_.Length);
+                log_apiminer_string(argname, &raw_buf, str_.Buffer, str_.Length);
             }
             else {
                 log_string(&b, idx, "", 0);
+                log_apiminer_string(argname, &raw_buf, "", 0);
             }
         }
         else if(*fmt == 'a') {
@@ -512,14 +656,23 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
             switch (copy_uint32(type)) {
             case REG_NONE:
                 log_string(&b, idx, NULL, 0);
+                log_apiminer_string(argname, &raw_buf, NULL, 0);
                 break;
 
             case REG_DWORD:
                 log_int32(&b, idx, copy_uint32(data));
+                _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                            _TRUNCATE, "[%s]%u, ", argname, copy_uint32(data));
+                raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf,
+                            (uint32_t)strlen(tmp_str_buf));
                 break;
 
             case REG_DWORD_BIG_ENDIAN:
                 log_int32(&b, idx, our_htonl(copy_uint32(data)));
+                _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                            _TRUNCATE, "[%s]%u, ", argname, our_htonl(copy_uint32(data)));
+                raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf,
+                            (uint32_t)strlen(tmp_str_buf));
                 break;
 
             case REG_EXPAND_SZ: case REG_SZ: case REG_MULTI_SZ:
@@ -533,6 +686,7 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
                         length--;
                     }
                     log_string(&b, idx, (const char *) data, length);
+                    log_apiminer_string(argname, &raw_buf, (const char *)data, length);
                 }
                 else {
                     uint32_t length = copy_uint32(size) / sizeof(wchar_t);
@@ -544,11 +698,16 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
                         length--;
                     }
                     log_wstring(&b, idx, (const wchar_t *) data, length);
+                    log_apiminer_wstring((char *)argname, &raw_buf,
+                                       (const wchar_t *) data, length);
                 }
                 break;
 
             case REG_QWORD:
                 log_int64(&b, idx, copy_uint64(data));
+                _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                            _TRUNCATE, "[%s]%"PRIi64", ", argname, copy_uint64(data));
+                raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
                 break;
 
             default:
@@ -559,11 +718,18 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
         else if(*fmt == 'q') {
             int64_t value = va_arg(args, int64_t);
             log_int64(&b, idx, value);
+            _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                        _TRUNCATE, "[%s]%"PRIi64", ", argname, value);
+            raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
         }
         else if(*fmt == 'Q') {
             LARGE_INTEGER *value = va_arg(args, LARGE_INTEGER *);
             log_int64(&b, idx,
                 value != NULL ? copy_uint64(&value->QuadPart) : 0);
+            _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]),
+                        _TRUNCATE, "[%s]%"PRIi64", ", argname,
+                        value != NULL ? copy_uint64(&value->QuadPart) : 0);
+            raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
         }
         else if(*fmt == 'z') {
             bson *value = va_arg(args, bson *);
@@ -582,6 +748,7 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
             REFCLSID rclsid = va_arg(args, REFCLSID);
             clsid_to_string(rclsid, buf);
             log_string(&b, idx, buf, strlen(buf));
+            log_apiminer_string(argname, &raw_buf, buf, strlen(buf));
         }
         else if(*fmt == 't') {
             const BSTR bstr = va_arg(args, const BSTR);
@@ -593,6 +760,7 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
             }
 
             log_wstring(&b, idx, s, len);
+            log_apiminer_wstring((char *)argname, &raw_buf, s, len);
         }
         else if(*fmt == 'v') {
             const VARIANT *v = va_arg(args, const VARIANT *);
@@ -605,6 +773,7 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
             }
 
             log_wstring(&b, idx, s, len);
+            log_apiminer_wstring((char *)argname, &raw_buf, s, len);
         }
         else {
             char buf[2] = {*fmt, 0};
@@ -620,6 +789,14 @@ void log_api(uint32_t index, int is_success, uintptr_t return_value,
     bson_finish(&b);
     log_raw(bson_data(&b), bson_size(&b));
     bson_destroy(&b);
+
+    if (raw_buf.offset >= 2) {
+        raw_buf.offset -= 2;
+    }
+    _snprintf_s(tmp_str_buf, sizeof(tmp_str_buf)/sizeof(tmp_str_buf[0]), _TRUNCATE,
+                ")\r\n", sig_category(index), sig_apiname(index));
+    raw_buf_add(&raw_buf, (uint8_t *)tmp_str_buf, strlen(tmp_str_buf));
+    log_apiminer_raw(raw_buf.buf, raw_buf.offset);
 }
 
 void log_new_process(int track)
@@ -870,7 +1047,17 @@ void log_init(const char *pipe_name, int track)
     wcsncpyA(g_debug_filepath, filepath, MAX_PATH);
 #endif
 
+    char new_logpipe[MAX_PATH];
+    char new_logpipe2[MAX_PATH];
+    our_snprintf(new_logpipe, MAX_PATH, "%s/apiminer_traces.%d.txt",
+                 pipe_name, GetCurrentProcessId());
+    our_snprintf(new_logpipe2, MAX_PATH, "%s/apiminer_traces.%d.pid_%d.txt",
+                 pipe_name, GetTickCount(), GetCurrentProcessId());
+    pipe_name = new_logpipe;
     wcsncpyA(g_log_pipename, pipe_name, MAX_PATH);
+    pipe_name = new_logpipe2;
+    wcsncpyA(g_log_apiminer_pipename, pipe_name, MAX_PATH);
+
     open_handles();
 
     char header[64]; uint32_t process_identifier = get_current_process_id();

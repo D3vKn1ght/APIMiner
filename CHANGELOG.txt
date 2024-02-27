@@ -1,146 +1,18 @@
-- Tweak: Log filepath for NtWriteFile calls (thanks Kevin Ross).
-- New: Merged David Oren's "stack pivot" and DEP detection pull request.
-- New: Monitor is now capable of reporting feedback to the end user.
-- Tweak: Dump input and output parameters to WMI-based calls.
-- New: Job-related API signatures.
-- Tweak: Added pdf-mode hooks to Adobe 11.
-- New: Implement instruction-level hooks for version-specific instrumentation.
-- Tweak: Whitelist certain access violations (thanks g0tmi1k).
-- New: Process follow logic for Win32_Process::Create functionality.
-- New: Integrate memory block dumping with the inject utility.
-- Tweak: Embed Capstone Engine directly rather than using Git submodules.
-- New: Optional gflags-like heap corruption detection.
-- New: Hooks for Adobe PDF Reader.
-- New: Report information about the environment at process launch.
-- Bugfix: 32-bit Office 2016 support.
-- Tweak: Get rid of user32 imports by locating them on-demand dynamically.
-- New: Correctly handle invalid pointers by not crashing when passed along.
-- New: Add a "track" variable to CreateProcessInternalW indicating if a
-  process was followed.
-- Tweak: Move some generic functionality from "iexplore" mode to "exploit".
-- Tweak: Switch from finding magic code sequences for locating certain
-  internal functions of DLLs to simply hardcoding offsets
-- New: Add Office 2007 VBA macro related hooks.
-- New: Pass along the process identifier when issuing commands through pipe().
-- Bugfix: Sign extension bug in utf8 encoding (thanks knifeyspoony).
-- Tweak: Dump process memory when ResumeThread is called.
-- Tweak: Ignore all Windows library related exceptions.
-- New: More 64-bit IE8 hooks.
-- Tweak: Don't use dropped buffers for buffers under 4k.
-- New: Proper process memory dump support from inject.exe
-- New: Function hooks for intercepting WMI queries.
-- New: Also dump raw filepaths/regkeys in related functions.
-- Tweak: Use DLL notifications to hook functions of new DLLs.
-- Tweak: Dump memory injected into other processes.
-- New: Dumped buffer support with unrestricted length.
-- New: Monitoring mode to restrict amount of API hooks for certain processes.
-- Tweak: Allow injection of service processes (thanks Accuvant).
-- Tweak: Ensure that any buffers we log are pointing to valid memory.
-- Tweak: Got rid of various imported DLLs by our monitor.
-- Bugfix: Properly handle delay-loaded DLLs (thanks Accuvant).
-- Tweak: Lower-level exception logging to see all userspace exceptions.
-- New: Hooking and logging of various private Internet Explorer functions.
-- New: Custom methods for retrieving addresses of private functions.
-- Tweak: Allow functions in different modules with the same name to be hooked.
-- Tweak: Use LdrLoadDll instead of LoadLibraryW for injection so processes
-  without kernel32 loaded can be injected as well (thanks Accuvant).
-- Tweak: Log module+offset in the stacktrace.
-- Tweak: More SetErrorMode flags so not to show an error box under Windows 7
-  (thanks Accuvant).
-- Tweak: Reuse pipe handle for multiple commands.
-- New: Use custom slab allocator for allocating hooking function stubs.
-- Tweak: Allow analysis of DllMain functionality of loaded DLLs.
-- New: Various signatures to improve analysis results on Internet Explorer 6,
-  Internet Explorer 8, and Firefox 3.6.
-- Tweak: Use our own sprintf implementation everywhere (except for capstone).
-- Tweak: Get rid of all ws2_32 imports.
-- Remove: Get rid of superfluous dropped file tracking.
-- New: Pipe-based logging which is more stable than Windows sockets.
-- Tweak: Make inject.exe and is32bit.exe unicode compatible.
-- New: Log the last error and the nt status for failed api calls.
-- Remove: ExitThread and ExitProcess signatures (thanks Accuvant).
-- Tweak: Improve compilation so that helper code does not depend on
-  automatically generated code, therefore improving compilation time when
-  working on signatures.
-- Remove: Removed minimum OS logic - just hook everything that can be hooked.
-- New: Various function signatures that eliminate unnecessary log entries.
-- Tweak: Change from iterating through unicode buffers to basic memory
-  management where each allocated buffer has to be freed.
-- New: Start on unittests of monitor functionality.
-- Tweak: Provide our own implementation of more general purpose functionality.
-- Feature: Allow the current working directory to be set when creating a new
-  process.
-- New: Introduce is32bit.exe to inject the 32-bit or 64-bit monitor based on
-  the original executable of the process to be injected.
-- Feature: Fixup compiler warnings, introduce stacktrace() in 64-bit mode, and
-  fixup 64-bit calling convention in order to allow 64-bit analysis.
-- Feature: Create process from another injected process - select by process
-  name.
-- Rewrite: Completely rewritten inject.c (was dllinject.c) to be used for
-  injection by Cuckoo. Supports process creation from within another process
-  and various other nifty tricks.
-- New: Logic for ignoring function calls referencing ignored object handles.
-- Tweak: Place hook after the "mov eax, imm32" instruction for hooked system
-  call wrappers (i.e., functions starting with Nt).
-- Tweak: Move prelog support logic from TLS entries to the relevant functions.
-- Tweak: Add verbose error reporting where useful to possibly avoid bricking
-  the monitor in the near future.
-- Tweak: Modify almost all native API usage to go through our custom system
-  call wrappers and memory allocator.
-- New: Introduce various native system call wrappers for directly executing
-  system calls. Implement basic memory allocator based on it.
-- Tweak: Properly fetch and restore last error codes by directly modifying
-  the TEB.
-- Huge tweak: Completely get rid of the TLS-based hook information state. The
-  relevant hook information (i.e., are we inside a hook?) is now obtained
-  through stacktraces.
-- Tweak: A couple more ignored special filepaths.
-- Tweak: Properly normalize registry keys.
-- Tweak: Move actual exception logging outside of the exception handler.
-- Tweak: Log bson data to a file if no socket configuration was specified.
-- Tweak: Simplified resolving of absolute paths (thanks Accuvant).
-- Bugfix: Resolved issues in UTF-8 encoding (thanks Accuvant).
-- New: Various signatures, parameters, flags, and "interesting" blocks.
-- Bugfix: Do not fetch configuration from $TEMP as it might vary between
-  processes (thanks Accuvant).
-- Tweak: Always enable Capstone string support.
-- Bugfix: APC Injection requires the thread identifier (thanks Accuvant).
-- Tweak: Include "interesting" blocks into many signatures.
-- Feature: Calculate a hash for each call, allow hashes to be ignored.
-- Tweak: Move flag representation logic to the Cuckoo side.
-- Tweak: "Instant" logging for functions that terminate.
-- Tweak: Improved logging of values for registry APIs.
-- Bugfix: Incorrect prelog output when the first API on a new thread uses it.
-- Feature: Resolve magic values to flags.
-- Add: A few Crypto and OLE signatures.
-- Tweak: Remove dead unhook detection regions when unloading a DLL.
-- Bugfix: Unhook detection was not working due to a copy 'n paste fail.
-- Tweak: Minimum OS version to ignore unresolved symbols when hooking.
-- Feature: Added Replace section for signatures.
-- Tweak: Resolve monitors' symbols while destroying its PE header.
-- Bugfix: Announce new threads to Cuckoo.
-- Bugfix: Registry key resolving null-ptr issue, un-crashing Python.
-- Bugfix: Only hook functions once (thanks Thorsten Sick).
-- Bugfix: Stabilize null pointer filepaths.
-- Tweak: Update and improve integration of ignored filepaths.
-- Bugfix: Correctly replace \Device\HarddiskVolumeX aliases (thanks Accuvant).
-- Bugfix: Don't enter infinite recursion when entering a new thread (thanks
-  Accuvant).
-- Bugfix: Improved various native registry hooks, un-crashing calc.exe (thanks
-  Thorsten Sick).
-- Bugfix: limit to a maximum of 1024 exceptions avoiding huge logs. Logs this
-  behavior (excessive exception count) as anomaly.
-- Tweak: use a ringbuffer for unicode filepaths rather than allocating many
-  dozens or even hundreds of kilobytes on the stack.
-- Bugfix: long file path resolving (after many attempts).
-- Bugfix: registry key path resolving (after many attempts).
-- Bugfix: execution never finishing due to unhook detection threads.
-- Dump instruction at exception address in debug mode.
-- Exception handler; log exceptions with stacktraces.
-- Introduce debug mode; attach a stacktrace to every logged API.
-- Resolve registry key paths on-the-fly.
-- "Ensure" blocks; avoid null pointer arguments in called APIs.
-- Documentation.
-- Special hooks; hook handlers for a specific API that are always invoked.
-- Start on 64-bit support.
-- Base monitor including hooking, logging, unhook detection.
+- Version 1.0.0
+  The first version.
+
+  A default apiminer_config.txt is provided in the root folder of this
+  repository. Config file should be located in standard fixed path
+  C:\apiminer-config.txt. The config file should contain only a single
+  config param specified below -
+  log-dir-path=C:\Users\<username>\Documents\
+
+  The log file containing the API traces would generated at the above folder
+  specified in the log-dir-path provided by apiminer_config.txt config file.
+
+  This version also requires the file apiminer-monitor-x86.dll with APIMiner.exe bit or 
+  apiminer-monitor-x64.dll with APIMiner64.exe to be located in the same directory.
+
+  To run a sample, you can type,
+  APIMiner --app <sample_path> --dll apiminer-monitor-x86.dll
+  APIMiner64 --app <sample_path> --dll apiminer-monitor-x64.dll

@@ -140,6 +140,9 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
     (void) hModule; (void) lpReserved;
 
     if(dwReason == DLL_PROCESS_ATTACH && is_ignored_process() == 0) {
+        GetModuleFileNameA(hModule, g_apiminer_monitor_module_path, sizeof(g_apiminer_monitor_module_path));
+        GetLongPathNameA(g_apiminer_monitor_module_path, g_apiminer_monitor_module_path, sizeof(g_apiminer_monitor_module_path));
+
         monitor_init(hModule);
         monitor_hook(NULL, NULL);
         pipe("LOADED:%d,%d", get_current_process_id(), g_monitor_track);

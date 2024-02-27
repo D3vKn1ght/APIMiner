@@ -24,7 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bson.h"
 #include "native.h"
 
+typedef struct raw_buf_t {
+    uint8_t buf[1024];
+    uint32_t offset;
+} raw_buf_t;
+
+extern char g_apiminer_monitor_module_path[MAX_PATH];
+
 void log_init(const char *pipe_name, int track);
+
+void log_apiminer_raw(uint8_t *buf, uint32_t len);
 
 void log_api(uint32_t index, int is_success, uintptr_t return_value,
     uint64_t hash, last_error_t *lasterr, ...);

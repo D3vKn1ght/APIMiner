@@ -40,7 +40,9 @@ typedef struct _dump_t {
     uint32_t protect;
 } dump_t;
 
+#if 0
 static int verbose = 0;
+#endif
 
 void error(const char *fmt, ...)
 {
@@ -507,6 +509,18 @@ int dump(uint32_t pid, const wchar_t *filepath,
 
 int main()
 {
+    printf("       d8888 8888888b. 8888888 888b     d888 d8b\n");
+    printf("      d88888 888   Y88b  888   8888b   d8888 Y8P\n");
+    printf("     d88P888 888    888  888   88888b.d88888\n");
+    printf("    d88P 888 888   d88P  888   888Y88888P888 888 88888b.   .d88b.  888d888\n");
+    printf("   d88P  888 8888888P\"   888   888 Y888P 888 888 888 \"88b d8P  Y8b 888P\"\n");
+    printf("  d88P   888 888         888   888  Y8P  888 888 888  888 88888888 888\n");
+    printf(" d8888888888 888         888   888   \"   888 888 888  888 Y8b.     888\n");
+    printf("d88P     888 888       8888888 888       888 888 888  888  \"Y8888  888\n");
+
+    printf("\nAPIMiner v1.0.0\n");
+    printf("API Logger for Windows Executables\n");
+
     LPWSTR *argv; int argc;
 
     argv = CommandLineToArgvW(GetCommandLineW(), &argc);
@@ -514,50 +528,27 @@ int main()
         error("Error parsing commandline options!\n");
     }
 
-    if(argc < 4) {
+    if(argc < 2) {
         error(
             "Usage: %S <options..>\n"
             "Options:\n"
-            "  --crt                  CreateRemoteThread injection\n"
-            "  --apc                  QueueUserAPC injection\n"
-            "  --free                 Do not inject our monitor\n"
-            "  --dll <dll>            DLL to inject\n"
-            "  --app <app>            Path to application to start\n"
+            "  --app <app>            Path to the application to monitor\n"
             "  --args <args>          Command-line arguments\n"
-            "                         Excluding the application path!\n"
-            "  --curdir <dirpath>     Current working directory\n"
-            "  --maximize             Maximize the newly created GUI\n"
-            "  --pid <pid>            Process identifier to inject\n"
-            "  --process-name <name>  Process name to inject\n"
-            "  --tid <tid>            Thread identifier to inject\n"
-            "  --from <pid>           Inject from another process\n"
-            "  --from-process <name>  "
-            "Inject from another process, resolves pid\n"
-            "  --only-start           "
-            "Start the application and print pid/tid\n"
-            "  --resume-thread        "
-            "Resume the thread of the pid/tid target\n"
-            "  --config <path>        "
-            "Configuration file for the monitor\n"
-            "  --dbg <path>           "
-            "Attach debugger to target process\n"
-            "  --dump <filepath>      "
-            "Dump process memory with --pid to filepath\n"
-            "  --dump-block <addr> <length> "
-            "Restrict process memory dump to a particular block\n"
-            "  --verbose              Verbose switch\n",
+            "  --dll <dll>            DLL to inject\n"
+            "                         Excluding the application path!\n",
             argv[0]
         );
     }
 
-    const wchar_t *dll_path = NULL, *app_path = NULL, *arguments = L"";
-    const wchar_t *config_file = NULL, *from_process = NULL, *dbg_path = NULL;
+    const wchar_t *dll_path = L"apiminer-monitor-x86.dll", *app_path = NULL, *arguments = L"";
+    const wchar_t *from_process = NULL, *dbg_path = NULL;
     const wchar_t *curdir = NULL, *process_name = NULL, *dump_path = NULL;
-    uint32_t pid = 0, tid = 0, from = 0, inj_mode = INJECT_NONE, partial = 0;
+    uint32_t pid = 0, tid = 0, from = 0, inj_mode = INJECT_CRT, partial = 0;
     uint32_t show_window = SW_SHOWNORMAL, only_start = 0, resume_thread_ = 0;
     uintptr_t dump_addr = 0, dump_length = 0;
 
     for (int idx = 1; idx < argc; idx++) {
+#if 0
         if(wcscmp(argv[idx], L"--crt") == 0) {
             inj_mode = INJECT_CRT;
             continue;
@@ -573,6 +564,7 @@ int main()
             continue;
         }
 
+#endif
         if(wcscmp(argv[idx], L"--dll") == 0) {
             dll_path = argv[++idx];
             continue;
@@ -593,6 +585,7 @@ int main()
             continue;
         }
 
+#if 0
         if(wcscmp(argv[idx], L"--maximize") == 0) {
             show_window = SW_MAXIMIZE;
             continue;
@@ -658,6 +651,7 @@ int main()
             verbose = 1;
             continue;
         }
+#endif
 
         error("[-] Found unsupported argument: %S\n", argv[idx]);
         return 1;
@@ -775,6 +769,7 @@ int main()
     }
 
     // Drop the configuration file if available.
+#if 0
     if(config_file != NULL) {
         static wchar_t filepath[MAX_PATH_W];
 
@@ -784,10 +779,11 @@ int main()
                 GetLastError());
         }
     }
+#endif
 
     // Do not do actual injection here, just have the application launched.
     if(only_start != 0) {
-        printf("%d %d", pid, tid);
+        //printf("%d %d", pid, tid);
         return 0;
     }
 
@@ -822,6 +818,6 @@ int main()
     }
 
     // Report the process and thread identifiers.
-    printf("%d %d", pid, tid);
+    //printf("%d %d", pid, tid);
     return 0;
 }

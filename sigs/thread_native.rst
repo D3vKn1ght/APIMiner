@@ -31,6 +31,7 @@ Pre::
 
     uint32_t pid = pid_from_process_handle(ProcessHandle);
     pipe("PROCESS:%d", pid);
+    apiminer_inject_process(ProcessHandle);
 
 Logging::
 
@@ -71,6 +72,7 @@ Pre::
 
     uint32_t pid = pid_from_process_handle(ProcessHandle);
     pipe("PROCESS:%d", pid);
+    apiminer_inject_process(ProcessHandle);
 
 Logging::
 
@@ -185,6 +187,7 @@ Logging::
 Post::
 
     pipe("PROCESS:%d", pid);
+    apiminer_inject_process_pid(pid);
     sleep_skip_disable();
     bson_destroy(&registers);
 
@@ -227,6 +230,7 @@ Pre::
     uint32_t pid = pid_from_thread_handle(ThreadHandle);
     if(pid != get_current_process_id()) {
         pipe("PROCESS:%d", pid);
+        apiminer_inject_process_pid(pid);
         pipe("DUMPMEM:%d", pid);
     }
 
@@ -273,6 +277,7 @@ Parameters::
 Pre::
 
     pipe("PROCESS:%d", pid_from_process_handle(ProcessHandle));
+    apiminer_inject_process_pid(pid_from_process_handle(ProcessHandle));
 
 Post::
 
@@ -299,6 +304,7 @@ Parameters::
 Pre::
 
     pipe("PROCESS:%d", pid_from_thread_handle(ThreadHandle));
+    apiminer_inject_process_pid(pid_from_thread_handle(ThreadHandle));
 
 Logging::
 

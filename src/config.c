@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ntapi.h"
 #include "utf8.h"
 
+#if 0
 static uint32_t _parse_mode(const char *mode)
 {
     uint32_t ret = HOOK_MODE_ALL;
@@ -75,11 +76,16 @@ static uint32_t _parse_mode(const char *mode)
     }
     return ret;
 }
+#endif
 
 void config_read(config_t *cfg)
 {
     char buf[512], config_fname[MAX_PATH];
+#if 0
     sprintf(config_fname, "C:\\cuckoo_%lu.ini", GetCurrentProcessId());
+#else
+    sprintf(config_fname, "C:\\apiminer_config.txt");
+#endif
 
     memset(cfg, 0, sizeof(config_t));
 
@@ -91,6 +97,10 @@ void config_read(config_t *cfg)
         return;
     }
 
+    cfg->force_sleep_skip = TRUE;
+    cfg->disguise = TRUE;
+    cfg->track = TRUE;
+    cfg->mode = HOOK_MODE_ALL;
     while (fgets(buf, sizeof(buf), fp) != NULL) {
         // Cut off the newline.
         char *p = strchr(buf, '\r');
@@ -107,6 +117,10 @@ void config_read(config_t *cfg)
 
         const char *key = buf, *value = p + 1;
 
+        if(strcmp(key, "log-dir-path") == 0) {
+            strncpy(cfg->logpipe, value, sizeof(cfg->logpipe));
+        }
+#if 0
         if(strcmp(key, "pipe") == 0) {
             strncpy(cfg->pipe_name, value, sizeof(cfg->pipe_name));
         }
@@ -148,7 +162,10 @@ void config_read(config_t *cfg)
                 value, cfg->trigger, sizeof(cfg->trigger) / sizeof(wchar_t)
             );
         }
+#endif
     }
     fclose(fp);
+#if 0
     DeleteFile(config_fname);
+#endif
 }

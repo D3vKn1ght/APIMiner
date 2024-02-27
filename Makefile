@@ -2,7 +2,7 @@ CC32 = i686-w64-mingw32-gcc -m32
 CC64 = x86_64-w64-mingw32-gcc -m64
 AR = ar
 CFLAGS = -Wall -Wextra -std=c99 -static -Wno-missing-field-initializers \
-		 -I inc/ -I objects/code/ -I src/bson/ -I src/sha1/ -mwindows
+		 -I inc/ -I objects/code/ -I src/bson/ -I src/sha1/ -mwindows -mconsole
 LDFLAGS = -lshlwapi
 MAKEFLAGS = -j8
 
@@ -44,8 +44,8 @@ LIBCAPSTONE32 = src/capstone/capstone-x86.lib
 LIBCAPSTONE64 = src/capstone/capstone-x64.lib
 
 BINARIES = \
-	bin/inject-x86.exe bin/inject-x64.exe bin/is32bit.exe \
-	bin/monitor-x86.dll bin/monitor-x64.dll
+	bin/APIMiner.exe bin/APIMiner64.exe bin/is32bit.exe \
+	bin/apiminer-monitor-x86.dll bin/apiminer-monitor-x64.dll
 
 ifdef DEBUG
 	CFLAGS += -DDEBUG=1 -O0 -ggdb
@@ -106,18 +106,18 @@ $(INSNSOBJ32): $(INSNSSRC) $(HEADER) Makefile
 $(INSNSOBJ64): $(INSNSSRC) $(HEADER) Makefile
 	$(CC64) -c -o $@ $< $(CFLAGS)
 
-bin/monitor-x86.dll: bin/monitor.c $(SRCOBJ32) $(HOOKOBJ32) $(FLAGOBJ32) \
+bin/apiminer-monitor-x86.dll: bin/monitor.c $(SRCOBJ32) $(HOOKOBJ32) $(FLAGOBJ32) \
 		$(INSNSOBJ32) $(BSONOBJ32) $(LIBCAPSTONE32) $(SHA1OBJ32)
 	$(CC32) -shared -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
-bin/monitor-x64.dll: bin/monitor.c $(SRCOBJ64) $(HOOKOBJ64) $(FLAGOBJ64) \
+bin/apiminer-monitor-x64.dll: bin/monitor.c $(SRCOBJ64) $(HOOKOBJ64) $(FLAGOBJ64) \
 		$(INSNSOBJ64) $(BSONOBJ64) $(LIBCAPSTONE64) $(SHA1OBJ64)
 	$(CC64) -shared -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
-bin/inject-x86.exe: bin/inject.c src/assembly.c
+bin/APIMiner.exe: bin/inject.c src/assembly.c
 	$(CC32) -o $@ $^ $(CFLAGS) $(LDFLAGS) -I inc
 
-bin/inject-x64.exe: bin/inject.c src/assembly.c
+bin/APIMiner64.exe: bin/inject.c src/assembly.c
 	$(CC64) -o $@ $^ $(CFLAGS) $(LDFLAGS) -I inc
 
 bin/is32bit.exe: bin/is32bit.c

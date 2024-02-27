@@ -52,6 +52,7 @@ Post::
 
     if(NT_SUCCESS(ret) != FALSE) {
         pipe("PROCESS:%d", pid);
+        apiminer_inject_process(ProcessHandle);
         sleep_skip_disable();
     }
 
@@ -106,6 +107,7 @@ Post::
 
     if(NT_SUCCESS(ret) != FALSE) {
         pipe("PROCESS:%d", pid);
+        apiminer_inject_process(ProcessHandle);
         sleep_skip_disable();
     }
 
@@ -568,6 +570,8 @@ Post::
 
     if(NT_SUCCESS(ret) != FALSE) {
         pipe("PROCESS:%d", pid);
+        //Disabled here because it hangs
+        //apiminer_inject_process_pid(pid);
         sleep_skip_disable();
     }
 

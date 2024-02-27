@@ -184,6 +184,8 @@ int pipe(const char *fmt, ...)
     return 0;
 #endif
 
+    return 0;
+
     if(g_pipe_name[0] == 0) {
         message_box(NULL, "Pipe has not been initialized yet!", "Error", 0);
         return -1;

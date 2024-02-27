@@ -238,4 +238,7 @@ void ole_enable_hooks(REFCLSID refclsid);
 extern uintptr_t g_monitor_start;
 extern uintptr_t g_monitor_end;
 
+void apiminer_inject_process(HANDLE hProcess);
+void apiminer_inject_process_pid(DWORD pid);
+
 #endif
