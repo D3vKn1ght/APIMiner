@@ -1,6 +1,6 @@
 /*
-Cuckoo Sandbox - Automated Malware Analysis.
-Copyright (C) 2017 Cuckoo Foundation.
+APIMiner Sandbox - Automated Malware Analysis.
+Copyright (C) 2017 APIMiner Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// This unittest demonstrates that Cuckoo logs too many API calls when doing
+// This unittest demonstrates that APIMiner logs too many API calls when doing
 // a simple LoadLibrary() on Windows-specific DLLs. In the future we should be
 // checking against the list of Known DLLs to avoid logging lots of
 // unnecessary API calls.

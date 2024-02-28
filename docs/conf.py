@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Cuckoo Monitor'
+project = u'APIMiner Monitor'
 copyright = u'2014-2017, Jurriaan Bremer'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -196,7 +196,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'monitor.tex', u'Cuckoo Monitor Documentation',
+  ('index', 'monitor.tex', u'APIMiner Monitor Documentation',
    u'Jurriaan Bremer', 'manual'),
 ]
 
@@ -226,7 +226,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'monitor', u'Cuckoo Monitor Documentation',
+    ('index', 'monitor', u'APIMiner Monitor Documentation',
      [u'Jurriaan Bremer'], 1)
 ]
 
@@ -240,8 +240,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'monitor', u'Cuckoo Monitor Documentation',
-   u'Jurriaan Bremer', 'monitor', 'Monitor for Cuckoo Sandbox.',
+  ('index', 'monitor', u'APIMiner Monitor Documentation',
+   u'Jurriaan Bremer', 'monitor', 'Monitor for APIMiner Sandbox.',
    'Miscellaneous'),
 ]
 

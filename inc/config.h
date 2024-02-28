@@ -1,6 +1,6 @@
 /*
-Cuckoo Sandbox - Automated Malware Analysis.
-Copyright (C) 2012-2018 Cuckoo Foundation.
+APIMiner Sandbox - Automated Malware Analysis.
+Copyright (C) 2012-2018 APIMiner Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 
 typedef struct _config_t {
-    // Pipe name to communicate with Cuckoo.
+    // Pipe name to communicate with APIMiner.
     char pipe_name[MAX_PATH];
 
     // Log pipe name to write bson logs to.

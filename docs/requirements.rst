@@ -3,7 +3,7 @@
 Requirements
 ============
 
-Building the Cuckoo Monitor is easiest on a Ubuntu machine. It should also
+Building the APIMiner Monitor is easiest on a Ubuntu machine. It should also
 be possible on other operating systems, but this has not been tested.
 
 Required packages
