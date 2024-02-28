@@ -1041,7 +1041,7 @@ void log_init(const char *pipe_name, int track)
 
 #if DEBUG
     char filepath[MAX_PATH];
-    our_snprintf(filepath, MAX_PATH, "C:\\monitor-debug-%d.txt",
+    our_snprintf(filepath, MAX_PATH, "C:\\monitor-debug-%d.nckh",
         GetCurrentProcessId());
     pipe("FILE_NEW:%z", filepath);
     wcsncpyA(g_debug_filepath, filepath, MAX_PATH);
@@ -1049,9 +1049,9 @@ void log_init(const char *pipe_name, int track)
 
     char new_logpipe[MAX_PATH];
     char new_logpipe2[MAX_PATH];
-    our_snprintf(new_logpipe, MAX_PATH, "%s/apiminer_traces.%d.txt",
+    our_snprintf(new_logpipe, MAX_PATH, "%s/apiminer_traces.%d.nckh",
                  pipe_name, GetCurrentProcessId());
-    our_snprintf(new_logpipe2, MAX_PATH, "%s/apiminer_traces.%d.pid_%d.txt",
+    our_snprintf(new_logpipe2, MAX_PATH, "%s/apiminer_traces.%d.pid_%d.nckh",
                  pipe_name, GetTickCount(), GetCurrentProcessId());
     pipe_name = new_logpipe;
     wcsncpyA(g_log_pipename, pipe_name, MAX_PATH);
