@@ -82,7 +82,7 @@ void config_read(config_t *cfg)
 {
     char buf[512], config_fname[MAX_PATH];
 #if 0
-    sprintf(config_fname, "C:\\cuckoo_%lu.ini", GetCurrentProcessId());
+    sprintf(config_fname, "C:\\apiminer_%lu.ini", GetCurrentProcessId());
 #else
     sprintf(config_fname, "C:\\apiminer_config.txt");
 #endif

@@ -61,7 +61,7 @@ uint32_t print_tids(uint32_t process_identifier)
 
 int main(int argc, char *argv[])
 {
-    pipe_init("\\\\.\\PIPE\\cuckoo", 0);
+    pipe_init("\\\\.\\PIPE\\apiminer", 0);
 
     if(argc == 2) {
         pipe("INFO:THIS IS CHILD..");

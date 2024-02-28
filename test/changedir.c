@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // This program tests running a sample from another directory by using the
 // curdir parameter when submitting the sample. As such curdir must be
 // provided when performing this unit test.
-// See also: https://github.com/cuckoosandbox/cuckoo/issues/413
-// Code based on sunlikr's https://gist.github.com/sunilkr/dec259379b9496b4b63a
 
 /// FINISH= yes
 /// PIPE= yes
@@ -171,7 +169,7 @@ uint8_t binary[] = {
 
 int main()
 {
-    pipe_init("\\\\.\\PIPE\\cuckoo", 0);
+    pipe_init("\\\\.\\PIPE\\apiminer", 0);
 
     char tempdir[MAX_PATH], filepath[MAX_PATH], filepath2[MAX_PATH];
 

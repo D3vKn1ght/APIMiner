@@ -83,21 +83,21 @@ void test_path_native()
 
     wchar_t *path = get_unicode_buffer();
 
-    CreateDirectory("C:\\cuckoomonitor-native", NULL);
-    SetCurrentDirectory("C:\\cuckoomonitor-native");
+    CreateDirectory("C:\\apiminermonitor-native", NULL);
+    SetCurrentDirectory("C:\\apiminermonitor-native");
 
-    pRtlInitUnicodeString(&dir_fname, L"\\??\\C:\\cuckoomonitor");
+    pRtlInitUnicodeString(&dir_fname, L"\\??\\C:\\apiminermonitor");
     pRtlInitUnicodeString(&file_fname, L"abc.txt");
 
     assert(path_get_full_path_unistr(&dir_fname, path) != 0);
-    assert(wcsicmp(path, L"C:\\cuckoomonitor") == 0);
+    assert(wcsicmp(path, L"C:\\apiminermonitor") == 0);
 
     InitializeObjectAttributes(&obj_dir, &dir_fname,
         OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, NULL, NULL);
 
     memset(path, 0, MAX_PATH_W * sizeof(wchar_t));
     assert(path_get_full_path_objattr(&obj_dir, path) != 0);
-    assert(wcsicmp(path, L"C:\\cuckoomonitor") == 0);
+    assert(wcsicmp(path, L"C:\\apiminermonitor") == 0);
 
     NTSTATUS ret = pZwCreateFile(&dir_handle, FILE_TRAVERSE, &obj_dir,
         &io_dir, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ, FILE_OPEN,
@@ -106,13 +106,13 @@ void test_path_native()
 
     memset(path, 0, MAX_PATH_W * sizeof(wchar_t));
     assert(path_get_full_path_handle(dir_handle, path) != 0);
-    assert(wcsicmp(path, L"C:\\cuckoomonitor") == 0);
+    assert(wcsicmp(path, L"C:\\apiminermonitor") == 0);
 
     InitializeObjectAttributes(&obj_file, &file_fname,
         OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, dir_handle, NULL);
 
     assert(path_get_full_path_objattr(&obj_file, path) != 0);
-    assert(wcsicmp(path, L"C:\\cuckoomonitor\\abc.txt") == 0);
+    assert(wcsicmp(path, L"C:\\apiminermonitor\\abc.txt") == 0);
 
     free_unicode_buffer(path);
 }
@@ -169,7 +169,7 @@ int main()
 
     WSADATA wsa;
     WSAStartup(MAKEWORD(2, 2), &wsa);
-    pipe_init("\\\\.\\PIPE\\cuckoo", 0);
+    pipe_init("\\\\.\\PIPE\\apiminer", 0);
 
     copy_init();
     hook_init(GetModuleHandle(NULL));
@@ -250,14 +250,14 @@ int main()
     assert(path_get_full_pathA("C:\\PROGRA~1\\INTERN~1\\iexplore.exe", path) != 0);
     assert(wcsicmp(path, L"C:\\Program Files\\Internet Explorer\\iexplore.exe") == 0);
 
-    CreateDirectory("C:\\cuckoomonitor", NULL);
-    SetCurrentDirectory("C:\\cuckoomonitor");
+    CreateDirectory("C:\\apiminermonitor", NULL);
+    SetCurrentDirectory("C:\\apiminermonitor");
     assert(path_get_full_path_unistr(&unistr, path) != 0);
-    assert(wcsicmp(path, L"C:\\cuckoomonitor\\HELLO") == 0);
+    assert(wcsicmp(path, L"C:\\apiminermonitor\\HELLO") == 0);
 
     unistr.Buffer = L"HEY"; unistr.Length = unistr.MaximumLength = 6;
     assert(path_get_full_path_objattr(&objattr, path) != 0);
-    assert(wcsicmp(path, L"C:\\cuckoomonitor\\HEY") == 0);
+    assert(wcsicmp(path, L"C:\\apiminermonitor\\HEY") == 0);
 
     test_path_native();
     test_exploit_lea_rewrite();

@@ -374,7 +374,7 @@ void log_explain(uint32_t index)
 
         const char *argname = sig_param_name(index, argnum-2);
 
-        // On certain formats, we need to tell cuckoo about them for
+        // On certain formats, we need to tell apiminer about them for
         // nicer display / matching.
         if(*fmt == 'p' || *fmt == 'P' || *fmt == 'x') {
             bson_append_start_array(&b, argidx);

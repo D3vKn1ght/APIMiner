@@ -48,7 +48,7 @@ int main()
 {
     WSADATA wsa;
     WSAStartup(MAKEWORD(2, 2), &wsa);
-    pipe_init("\\\\.\\PIPE\\cuckoo", 0);
+    pipe_init("\\\\.\\PIPE\\apiminer", 0);
 
     copy_init();
     hook_init(GetModuleHandle(NULL));

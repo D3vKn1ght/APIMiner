@@ -773,7 +773,7 @@ int main()
     if(config_file != NULL) {
         static wchar_t filepath[MAX_PATH_W];
 
-        wsprintfW(filepath, L"C:\\cuckoo_%d.ini", pid);
+        wsprintfW(filepath, L"C:\\apiminer_%d.ini", pid);
         if(MoveFileW(config_file, filepath) == FALSE) {
             error("[-] Error dropping configuration file: %ld\n",
                 GetLastError());

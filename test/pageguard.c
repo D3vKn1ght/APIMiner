@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Tests the page guard detection functionality.
 
-// OPTIONS= human=0,pipe=cuckoo,mode=exploit,trigger=exefile
+// OPTIONS= human=0,pipe=apiminer,mode=exploit,trigger=exefile
 
 #include <stdio.h>
 #include <stdint.h>
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 {
     (void) argc;
 
-    pipe_init("\\\\.\\PIPE\\cuckoo", 0);
+    pipe_init("\\\\.\\PIPE\\apiminer", 0);
 
     hook_init(GetModuleHandle(NULL));
     assert(native_init() == 0);

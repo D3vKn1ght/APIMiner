@@ -104,7 +104,7 @@ def compile_file(fname, arch):
             if kw.FINISH == 'yes':
                 f.write('    "unittest.finish": "1"\n')
             if kw.PIPE == 'yes':
-                f.write('    "pipe": "cuckoo"\n')
+                f.write('    "pipe": "apiminer"\n')
             if kw.FREE == 'yes':
                 f.write('    "free": "yes"\n')
             f.write('\n')
