@@ -2,11 +2,11 @@
 
 ## API Logging Tool for Windows Applications
 
-### Version 1.0.0 - The First Release
+### Version 1.1
 
 APIMiner is a tool for logging API calls in Windows executables, useful for development and security analysis.
 
-**Download:** [APIMiner v1.0.0](https://github.com/trung501/APIMiner/releases/tag/v1.0)
+**Download:** [APIMiner v1.1](https://github.com/trung501/APIMiner/releases/tag/v1.1)
 
 **Features:**
 - Real-time logging of API calls.
