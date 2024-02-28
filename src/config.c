@@ -1,6 +1,6 @@
 /*
-Cuckoo Sandbox - Automated Malware Analysis.
-Copyright (C) 2012-2018 Cuckoo Foundation.
+APIMiner Sandbox - Automated Malware Analysis.
+Copyright (C) 2012-2018 APIMiner Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ void config_read(config_t *cfg)
 {
     char buf[512], config_fname[MAX_PATH];
 #if 0
-    sprintf(config_fname, "C:\\cuckoo_%lu.ini", GetCurrentProcessId());
+    sprintf(config_fname, "C:\\apiminer_%lu.ini", GetCurrentProcessId());
 #else
     sprintf(config_fname, "C:\\apiminer_config.txt");
 #endif
@@ -92,8 +92,8 @@ void config_read(config_t *cfg)
     FILE *fp = fopen(config_fname, "rb");
     if(fp == NULL) {
         message_box(NULL, "Error fetching configuration file! This is a "
-            "serious error. If encountered, please notify the Cuckoo "
-            "Developers as this error prevents analysis.", "Cuckoo Error", 0);
+            "serious error. If encountered, please notify the APIMiner "
+            "Developers as this error prevents analysis.", "APIMiner Error", 0);
         return;
     }
 

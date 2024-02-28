@@ -159,7 +159,7 @@ indicate that this variable should be logged. Finally, if a third argument is
 given, then this indicates the ``alias``. In the reports you'll see the
 ``alias``, or the ``VariableName`` if no alias was given, as key. Due to
 consistency it is recommended to use the original variable names as described
-in the API prototypes and to use lowercase aliases as Cuckoo-specific names.
+in the API prototypes and to use lowercase aliases as APIMiner-specific names.
 
 .. _hook-block-flags:
 
@@ -209,9 +209,9 @@ Pre Block
 
 The pre block allows one to execute code before any other code in the hook
 handler. For example, when a file is deleted using the ``DeleteFile``
-function, the Monitor will first want to notify Cuckoo in order to make sure
+function, the Monitor will first want to notify APIMiner in order to make sure
 it can make a backup of the file before it is being deleted (also known as
-``dropped files`` in Cuckoo reports.)
+``dropped files`` in APIMiner reports.)
 
 There is no special syntax for pre blocks - its lines are directly included
 as C code in the generated C hooks source.

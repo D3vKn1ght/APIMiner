@@ -1,6 +1,6 @@
 /*
-Cuckoo Sandbox - Automated Malware Analysis.
-Copyright (C) 2010-2015 Cuckoo Foundation.
+APIMiner Sandbox - Automated Malware Analysis.
+Copyright (C) 2010-2015 APIMiner Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -773,7 +773,7 @@ int main()
     if(config_file != NULL) {
         static wchar_t filepath[MAX_PATH_W];
 
-        wsprintfW(filepath, L"C:\\cuckoo_%d.ini", pid);
+        wsprintfW(filepath, L"C:\\apiminer_%d.ini", pid);
         if(MoveFileW(config_file, filepath) == FALSE) {
             error("[-] Error dropping configuration file: %ld\n",
                 GetLastError());

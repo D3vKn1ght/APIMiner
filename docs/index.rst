@@ -4,10 +4,10 @@
    contain the root `toctree` directive.
 
 ==========================================
-Welcome to Cuckoo Monitor's documentation!
+Welcome to APIMiner Monitor's documentation!
 ==========================================
 
-The **Cuckoo Monitor** is the *new* user-mode monitor for `Cuckoo Sandbox
+The **APIMiner Monitor** is the *new* user-mode monitor for `APIMiner Sandbox
 <http://cuckoosandbox.org/>`_. It has been rewritten from scratch with clean
 and easily extendable code in mind.
 

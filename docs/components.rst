@@ -34,7 +34,7 @@ The C Framework includes the following functionality (and more):
 
 * Sleep Skip::
 
-    Ability to (force) skip long sleeps which tend to make Cuckoo run into the
+    Ability to (force) skip long sleeps which tend to make APIMiner run into the
     analysis timeout.
 
 * Unhook Detection::
@@ -46,7 +46,7 @@ The C Framework includes the following functionality (and more):
 * Filtering::
 
     Basic filtering of common windows-related filepaths that are generally
-    not interesting to Cuckoo.
+    not interesting to APIMiner.
 
 .. _components-asm:
 

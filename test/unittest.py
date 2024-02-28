@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-Cuckoo Sandbox - Automated Malware Analysis
-Copyright (C) 2015-2017 Cuckoo Foundation
+APIMiner Sandbox - Automated Malware Analysis
+Copyright (C) 2015-2017 APIMiner Foundation
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ def compile_file(fname, arch):
             if kw.FINISH == 'yes':
                 f.write('    "unittest.finish": "1"\n')
             if kw.PIPE == 'yes':
-                f.write('    "pipe": "cuckoo"\n')
+                f.write('    "pipe": "apiminer"\n')
             if kw.FREE == 'yes':
                 f.write('    "free": "yes"\n')
             f.write('\n')

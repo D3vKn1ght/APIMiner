@@ -1,6 +1,6 @@
 /*
-Cuckoo Sandbox - Automated Malware Analysis.
-Copyright (C) 2017 Cuckoo Foundation.
+APIMiner Sandbox - Automated Malware Analysis.
+Copyright (C) 2017 APIMiner Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ int main()
 {
     WSADATA wsa;
     WSAStartup(MAKEWORD(2, 2), &wsa);
-    pipe_init("\\\\.\\PIPE\\cuckoo", 0);
+    pipe_init("\\\\.\\PIPE\\apiminer", 0);
 
     copy_init();
     hook_init(GetModuleHandle(NULL));

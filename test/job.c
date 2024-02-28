@@ -1,6 +1,6 @@
 /*
-Cuckoo Sandbox - Automated Malware Analysis.
-Copyright (C) 2016-2017 Cuckoo Foundation.
+APIMiner Sandbox - Automated Malware Analysis.
+Copyright (C) 2016-2017 APIMiner Foundation.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ uint32_t print_tids(uint32_t process_identifier)
 
 int main(int argc, char *argv[])
 {
-    pipe_init("\\\\.\\PIPE\\cuckoo", 0);
+    pipe_init("\\\\.\\PIPE\\apiminer", 0);
 
     if(argc == 2) {
         pipe("INFO:THIS IS CHILD..");
