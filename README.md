@@ -17,8 +17,8 @@ APIMiner is a tool for logging API calls in Windows executables, useful for deve
 2. Ensure DLLs (`apiminer-monitor-x86.dll` or `apiminer-monitor-x64.dll`) are in the same directory as the respective APIMiner executable.
 
 **Usage:**
-- For 32-bit: `APIMiner --app <sample_path> --dll apiminer-monitor-x86.dll`
-- For 64-bit: `APIMiner64 --app <sample_path> --dll apiminer-monitor-x64.dll`
+- For 32-bit: `APIMiner.exe --app <sample_path> --dll apiminer-monitor-x86.dll`
+- For 64-bit: `APIMiner64.exe --app <sample_path> --dll apiminer-monitor-x64.dll`
 
 **Support:** Issues can be reported on the [GitHub issue tracker](https://github.com/trung501/APIMiner/issues).
 
